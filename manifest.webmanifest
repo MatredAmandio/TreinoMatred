@@ -1,0 +1,19 @@
+{
+  "name": "Treino Matred",
+  "short_name": "Treino",
+  "description": "Ficha pessoal de hipertrofia com registro de cargas, RIR e cronômetro de descanso.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f1ea",
+  "theme_color": "#181a20",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
