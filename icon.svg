@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Treino Matred</title>
+  <rect width="512" height="512" rx="112" fill="#181a20"/>
+  <circle cx="256" cy="256" r="142" fill="#ff7a45"/>
+  <g fill="#181a20">
+    <rect x="151" y="235" width="210" height="42" rx="18"/>
+    <rect x="112" y="191" width="36" height="130" rx="15"/>
+    <rect x="155" y="210" width="31" height="92" rx="14"/>
+    <rect x="364" y="210" width="31" height="92" rx="14"/>
+    <rect x="402" y="191" width="36" height="130" rx="15"/>
+  </g>
+</svg>
