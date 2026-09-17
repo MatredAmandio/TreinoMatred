@@ -14,3 +14,8 @@ O endereco sera: https://matredamandio.github.io/Treino/
 ## Dados
 
 Os registros ficam somente no armazenamento local do navegador. Use a opcao de exportacao no aplicativo para fazer backup.
+
+
+## Demonstrações visuais
+
+As fotografias de posição inicial e final são carregadas do projeto [Free Exercise DB](https://github.com/yuhonas/free-exercise-db), disponibilizado em domínio público sob a [Unlicense](https://unlicense.org/). Variações sem correspondência exata são identificadas no aplicativo como referência visual aproximada.
