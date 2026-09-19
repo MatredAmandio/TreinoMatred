@@ -104,7 +104,7 @@ const workouts=[
 ["deadbug","Dead bug",2,"8–12/lado",45,"Técnica","Core","Deite com quadris e joelhos a 90°|Estenda braço e perna opostos|Retorne e alterne","A lombar deve permanecer estável.","core"]]}
 ];
 
-const MEDIA_BASE="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
+const MEDIA_BASE="./media/";
 const MEDIA={
 "hip-thrust":["Barbell_Hip_Thrust",1],"rdl":["Romanian_Deadlift",1],"leg-curl":["Lying_Leg_Curls",1],
 "abduction":["Thigh_Abductor",1],"calf-stand":["Standing_Calf_Raises",1],"lat-pull":["Wide-Grip_Lat_Pulldown",1],
@@ -130,7 +130,7 @@ const dateKey=()=>new Date().toISOString().slice(0,10);
 function logKey(w,e,s){return dateKey()+"|"+w+"|"+e+"|"+s}
 function getLog(w,e,s){return state.logs[logKey(w,e,s)]||{kg:"",reps:"",done:false}}
 function icon(type,large=false){const a=type==="squat"||type==="lunge"||type==="step"?"moving":"";return `<svg viewBox="0 0 120 90" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 75h84" opacity=".2"/><g class="${a}"><circle cx="58" cy="19" r="8"/><path d="M58 27v25M58 34L39 47M58 34l20 12M58 52L43 72M58 52l21 20"/></g>${type==="pull"?'<path d="M28 10h64M39 10v30M81 10v30"/>':""}${type==="press"?'<path d="M32 44h56M40 37v14M80 37v14"/>':""}${type==="hinge"?'<path d="M74 45h25M88 38v14"/>':""}${type==="squat"?'<path d="M30 29h58M38 24v10M80 24v10"/>':""}${type==="core"?'<path d="M28 67h66"/><path d="M42 62l17-16 18 13"/>':""}${type==="step"?'<path d="M72 70h28V50H80"/>':""}${type==="calf"?'<path d="M80 72h20"/>':""}</g></svg>`}
-function thumbnail(e){const m=MEDIA[e[0]];return m?`<img src="${MEDIA_BASE+m[0]}/0.jpg" alt="" loading="lazy" decoding="async">`:icon(e[10])}
+function thumbnail(e){const m=MEDIA[e[0]];return m?`<img src="${MEDIA_BASE+m[0]}/0.jpg" alt="" loading="eager" decoding="async">`:icon(e[10])}
 function renderDays(){dayStrip.innerHTML=workouts.map((w,i)=>`<button class="day-pill ${i===selected?"active":""}" data-day="${i}"><strong>${w.day}</strong>${w.name.slice(0,3)}</button>`).join("");dayStrip.querySelectorAll("button").forEach(b=>b.onclick=()=>{selected=+b.dataset.day;render()})}
 function render(){
  const w=workouts[selected];renderDays();workoutTitle.textContent=w.title;workoutFocus.textContent=w.focus;todayLabel.textContent=w.name;
