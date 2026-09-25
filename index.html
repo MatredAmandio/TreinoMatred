@@ -129,7 +129,9 @@ const MEDIA={
 const KEY="treino-matred-v1";
 let state=JSON.parse(localStorage.getItem(KEY)||'{"logs":{},"history":[]}');
 let selected=Math.min(new Date().getDay()-1,4); if(selected<0)selected=0;
-let timerId=null,timerLeft=0,timerTotal=0;
+let timerId=null,timerLeft=0,timerTotal=0,audioCtx=null;
+function prepareSound(){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume()}catch{}}
+function playRestSound(){try{prepareSound();const now=audioCtx.currentTime;[0,.22,.44].forEach((delay,i)=>{const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type="sine";osc.frequency.value=i===2?1046:880;gain.gain.setValueAtTime(.0001,now+delay);gain.gain.exponentialRampToValueAtTime(.22,now+delay+.02);gain.gain.exponentialRampToValueAtTime(.0001,now+delay+.17);osc.connect(gain);gain.connect(audioCtx.destination);osc.start(now+delay);osc.stop(now+delay+.18)})}catch{}}
 
 const $=s=>document.querySelector(s);
 const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
@@ -157,7 +159,7 @@ function updateInput(i){const k=logKey(i.dataset.w,i.dataset.e,i.dataset.s);stat
 function toggleSet(b){const k=logKey(b.dataset.w,b.dataset.e,b.dataset.s);state.logs[k]=state.logs[k]||{kg:"",reps:""};state.logs[k].done=!state.logs[k].done;b.classList.toggle("done",state.logs[k].done);save();updateProgress();if(state.logs[k].done){const w=workouts.find(x=>x.id===b.dataset.w),e=w.ex.find(x=>x[0]===b.dataset.e);startTimer(e[4],e[1])}}
 function updateProgress(){const w=workouts[selected];let total=0,done=0;w.ex.forEach(e=>{for(let s=0;s<e[2];s++){total++;if(getLog(w.id,e[0],s).done)done++}});const p=Math.round(done/total*100);progressRing.style.setProperty("--p",p+"%");progressRing.dataset.label=p+"%"}
 function format(sec){return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0")}
-function startTimer(sec,name){clearInterval(timerId);timerLeft=timerTotal=sec;timerName.textContent=name;timerText.textContent=format(timerLeft);timer.classList.add("show");timerId=setInterval(()=>{timerLeft--;timerText.textContent=format(Math.max(0,timerLeft));if(timerLeft<=0){clearInterval(timerId);navigator.vibrate?.([200,100,200]);timerName.textContent="Descanso concluído";showToast("Hora da próxima série!")}},1000)}
+function startTimer(sec,name){prepareSound();clearInterval(timerId);timerLeft=timerTotal=sec;timerName.textContent=name;timerText.textContent=format(timerLeft);timer.classList.add("show");timerId=setInterval(()=>{timerLeft--;timerText.textContent=format(Math.max(0,timerLeft));if(timerLeft<=0){clearInterval(timerId);playRestSound();navigator.vibrate?.([200,100,200]);timerName.textContent="Descanso concluído";showToast("🔔 Descanso concluído! Hora da próxima série.")}},1000)}
 addTimer.onclick=()=>{timerLeft+=30;timerText.textContent=format(timerLeft)};stopTimer.onclick=()=>{clearInterval(timerId);timer.classList.remove("show")};
 function showWarmup(w){warmupTitle.textContent=w.title;warmupSteps.innerHTML=w.steps.map((x,i)=>`<div class="warmup-step"><span>${i+1}</span><div><strong>${x[0]}</strong><small>${x[1]}</small></div></div>`).join("");warmupDialog.showModal()}
 closeWarmup.onclick=()=>warmupDialog.close();warmupDone.onclick=()=>warmupDialog.close();warmupDialog.onclick=e=>{if(e.target===warmupDialog)warmupDialog.close()};
