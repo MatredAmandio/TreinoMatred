@@ -40,7 +40,7 @@
   <section id="today" class="view active">
     <div class="section-title"><h2>Seu treino</h2><small id="todayLabel"></small></div>
     <div class="day-strip" id="dayStrip"></div>
-    <div class="summary"><div class="summary-top"><div><h3 id="workoutTitle"></h3><p id="workoutFocus"></p></div><div class="progress-ring" id="progressRing" data-label="0%"></div></div><button class="warmup-btn" id="warmupBtn" hidden>🔥 Aquecimento opcional · 3–5 min</button></div>
+    <div class="summary"><div class="summary-top"><div><h3 id="workoutTitle"></h3><p id="workoutFocus"></p></div><div class="progress-ring" id="progressRing" data-label="0%"></div></div><button class="warmup-btn" id="warmupBtn" hidden>🔥 Aquecimento + 100 abdominais</button></div>
     <div id="exerciseList"></div>
     <button class="finish" id="finishBtn">Concluir treino</button>
   </section>
@@ -62,68 +62,72 @@
 <div class="timer" id="timer"><div><strong id="timerText">01:30</strong><small id="timerName">Descanso</small></div><button class="add" id="addTimer">+30s</button><button class="stop" id="stopTimer">Parar</button></div>
 <div class="toast" id="toast"></div>
 <dialog id="exerciseDialog"><div class="modal"><div class="modal-top"><div><span class="muscle" id="modalMuscle"></span><h2 id="modalTitle"></h2></div><button class="close" id="closeModal">✕</button></div><div class="demo-large" id="modalDemo"></div><h3>Como executar</h3><ul id="modalSteps"></ul><h3>Atenção</h3><p id="modalCue"></p></div></dialog>
-<dialog id="warmupDialog"><div class="modal"><div class="modal-top"><div><span class="muscle">OPCIONAL · 3–5 MIN</span><h2 id="warmupTitle"></h2></div><button class="close" id="closeWarmup">✕</button></div><p class="warmup-intro">Prepare os movimentos e aumente a carga aos poucos, sem cansar antes das séries válidas.</p><div class="warmup-steps" id="warmupSteps"></div><div class="warmup-note"><strong>Intensidade:</strong> mantenha pelo menos 5 repetições em reserva (RIR 5+) e descanse 30–45 s. Pare se houver dor ou tontura.</div><button class="primary warmup-done" id="warmupDone">Entendi, começar treino</button></div></dialog>
+<dialog id="warmupDialog"><div class="modal"><div class="modal-top"><div><span class="muscle">AQUECIMENTO · 8–12 MIN</span><h2 id="warmupTitle"></h2></div><button class="close" id="closeWarmup">✕</button></div><p class="warmup-intro">Faça os 100 abdominais leves, a ativação específica e aumente a carga aos poucos, sem cansar antes das séries válidas.</p><div class="warmup-steps" id="warmupSteps"></div><div class="warmup-note"><strong>Intensidade:</strong> mantenha pelo menos 5 repetições em reserva (RIR 5+) e descanse 30–45 s. Pare se houver dor ou tontura.</div><button class="primary warmup-done" id="warmupDone">Entendi, começar treino</button></div></dialog>
 <script>
 const workouts=[
-{id:"seg",day:"SEG",name:"Segunda",title:"Glúteos e posteriores",focus:"Maior tensão mecânica para extensão de quadril e cadeia posterior.",ex:[
-["hip-thrust","Elevação pélvica com barra",3,"6–10",150,"RIR 2","Glúteos","Apoie as escápulas no banco|Eleve o quadril empurrando pelos calcanhares|Pare 1 segundo no topo","Mantenha costelas e pelve controladas; não hiperestenda a lombar.","hinge"],
-["rdl","Terra romeno",3,"8–10",150,"RIR 2","Glúteos e posteriores","Mantenha a carga próxima ao corpo|Leve o quadril para trás|Suba estendendo o quadril","Coluna estável e joelhos levemente flexionados.","hinge"],
-["leg-curl","Mesa flexora",3,"10–15",90,"RIR 1–2","Posteriores","Ajuste o eixo da máquina ao joelho|Flexione sem levantar o quadril|Retorne em 2 segundos","Não deixe a carga despencar.","curl"],
-["abduction","Abdução na máquina",2,"15–25",60,"RIR 1","Glúteo médio","Encoste o tronco no apoio|Abra os joelhos com controle|Retorne mantendo tensão","Evite impulso e amplitude forçada.","abduct"],
-["calf-stand","Panturrilha em pé",3,"8–12",75,"RIR 1–2","Panturrilhas","Desça o calcanhar completamente|Suba até a ponta dos pés|Faça pequenas pausas nas extremidades","Não transforme o movimento em balanço.","calf"]]},
-{id:"ter",day:"TER",name:"Terça",title:"Tronco A e abdômen",focus:"Costas em prioridade, com empurrada e trabalho direto de braços.",ex:[
-["lat-pull","Puxada alta",3,"8–12",90,"RIR 2","Dorsais","Segure a barra com pegada confortável|Leve os cotovelos para baixo|Controle a subida","Evite balançar o tronco.","pull"],
-["chest-row","Remada com apoio no peito",3,"8–12",90,"RIR 2","Costas","Mantenha o peito apoiado|Puxe conduzindo pelos cotovelos|Retorne até alongar","Não hiperestenda a lombar.","pull"],
-["chest-press","Supino máquina ou halteres",2,"8–12",90,"RIR 2","Peitoral e tríceps","Estabilize as escápulas|Empurre sem perder a posição|Retorne com controle","Use amplitude confortável e sem dor.","press"],
-["single-pull","Puxada unilateral no cabo",2,"10–15/lado",75,"RIR 1–2","Dorsais","Posicione o tronco estável|Alongue a dorsal|Conduza o cotovelo para baixo","Não gire o corpo para ajudar.","pull"],
-["lateral","Elevação lateral",3,"12–20",60,"RIR 1–2","Ombros","Mantenha cotovelos levemente flexionados|Eleve até a linha confortável do ombro|Desça devagar","Use carga moderada e sem impulso.","raise"],
-["curl","Rosca alternada",2,"8–12",60,"RIR 1","Bíceps","Mantenha cotovelos ao lado do corpo|Flexione alternadamente|Desça completamente","Não jogue o tronco para trás.","curl"],
-["triceps","Tríceps corda",2,"10–15",60,"RIR 1","Tríceps","Fixe os cotovelos|Estenda os braços|Separe a corda no final","Não movimente os ombros.","press"],
-["crunch","Crunch na polia",3,"10–15",60,"RIR 1–2","Abdômen","Ajoelhe diante da polia|Aproxime costelas e pelve|Retorne sem perder tensão","Flexione o tronco, não apenas o quadril.","core"]]},
-{id:"qua",day:"QUA",name:"Quarta",title:"Glúteos e quadríceps",focus:"Sessão dominante de joelho com trabalho unilateral.",ex:[
-["bulgarian","Agachamento búlgaro",2,"8–12/lado",90,"RIR 2","Glúteos e pernas","Apoie o pé de trás|Desça verticalmente com controle|Suba pela perna da frente","Escolha distância que dê estabilidade.","lunge"],
-["leg-press","Leg press 45°",3,"10–15",120,"RIR 2","Quadríceps e glúteos","Apoie toda a coluna|Desça até manter a pelve estável|Empurre sem travar os joelhos","Não retire a lombar do encosto.","squat"],
-["smith","Agachamento no Smith",3,"6–10",150,"RIR 2","Glúteos e quadríceps","Posicione os pés de forma estável|Desça controlando joelhos e quadril|Suba empurrando o chão","Joelhos acompanham a direção dos pés.","squat"],
-["extension","Cadeira extensora",3,"10–15",75,"RIR 1","Quadríceps","Alinhe joelho e eixo da máquina|Estenda os joelhos|Retorne devagar","A última série pode chegar a RIR 0–1 se não houver dor.","curl"],
-["calf-seat","Panturrilha sentada",3,"10–15",75,"RIR 1–2","Panturrilhas","Desça até sentir alongamento|Suba o máximo possível|Pause nas extremidades","Use amplitude completa.","calf"]]},
-{id:"qui",day:"QUI",name:"Quinta",title:"Tronco B e abdômen",focus:"Segundo estímulo de costas, empurradas, ombros e braços.",ex:[
-["cable-row","Remada baixa no cabo",3,"8–12",90,"RIR 2","Costas","Sente com tronco estável|Puxe conduzindo os cotovelos|Retorne até alongar","Evite embalar o corpo.","pull"],
-["neutral-pull","Puxada neutra",3,"8–12",90,"RIR 2","Dorsais","Use pegada neutra|Leve cotovelos para baixo|Controle a subida","Peito alto sem exagerar a lombar.","pull"],
-["incline","Supino inclinado com halteres",3,"8–12",90,"RIR 2","Peitoral superior","Use inclinação baixa ou moderada|Desça os halteres com controle|Empurre mantendo punhos estáveis","Use amplitude confortável.","press"],
+{id:"seg",day:"SEG",name:"Segunda",title:"Inferiores A · glúteos e força",focus:"Glúteos, quadríceps, posteriores e panturrilhas com ênfase em força.",ex:[
+["hip-thrust","Elevação pélvica com barra",3,"6–10",150,"RIR 2","Glúteo máximo","Apoie as escápulas no banco|Eleve o quadril empurrando pelos calcanhares|Pare por 1 segundo no topo","Mantenha costelas e pelve controladas; não hiperestenda a lombar.","hinge"],
+["rdl","Terra romeno com barra",2,"8–10",150,"RIR 2","Glúteos e posteriores","Mantenha a barra próxima ao corpo|Leve o quadril para trás|Suba estendendo o quadril","Coluna estável e joelhos levemente flexionados.","hinge"],
+["bulgarian","Agachamento búlgaro com halteres",2,"8–10/lado",120,"RIR 2","Glúteos e quadríceps","Apoie o pé de trás e encontre equilíbrio|Desça controlando o joelho da frente|Suba empurrando pelo pé da frente","Use apoio para equilíbrio se necessário; a perna de trás não impulsiona.","lunge"],
+["extension","Cadeira extensora",2,"12–15",75,"RIR 1–2","Quadríceps","Alinhe o joelho ao eixo da máquina|Estenda os joelhos|Retorne devagar","Não deixe a carga despencar.","curl"],
+["seated-curl","Flexora sentada",2,"10–15",90,"RIR 1–2","Posteriores","Ajuste o eixo ao joelho|Flexione os joelhos sem retirar o quadril do banco|Retorne em 2 segundos","Mantenha o quadril apoiado.","curl"],
+["abduction","Abdução na máquina",2,"15–25",60,"RIR 1–2","Glúteos médio e mínimo","Ajuste o encosto|Abra os joelhos com controle|Retorne mantendo tensão","Evite impulso e amplitude forçada.","abduct"],
+["calf-stand","Panturrilha em pé",3,"10–15",75,"RIR 1–2","Panturrilhas","Desça os calcanhares completamente|Suba até a ponta dos pés|Pause nas extremidades","Não transforme o movimento em balanço.","calf"]]},
+{id:"ter",day:"TER",name:"Terça",title:"Superiores A · costas em prioridade",focus:"Costas, peito, ombros e braços em diferentes planos.",ex:[
+["lat-pull","Puxada alta aberta",3,"8–12",90,"RIR 2","Costas","Segure a barra com pegada confortável|Leve os cotovelos para baixo|Controle a subida","Evite balançar o tronco.","pull"],
+["chest-row","Remada com apoio no peito",3,"8–12",90,"RIR 2","Costas","Mantenha o peito apoiado|Puxe conduzindo pelos cotovelos|Retorne até alongar","Não retire o peito do apoio.","pull"],
+["incline","Supino inclinado com halteres",3,"8–12",90,"RIR 2","Peitoral superior","Estabilize as escápulas|Desça os halteres com controle|Empurre mantendo os punhos estáveis","Use inclinação baixa ou moderada e amplitude confortável.","press"],
 ["shoulder","Desenvolvimento em máquina",2,"8–12",90,"RIR 2","Ombros","Ajuste o banco|Empurre acima da cabeça|Desça até a amplitude confortável","Não force uma amplitude dolorosa.","press"],
-["face-pull","Face pull",2,"12–20",60,"RIR 1–2","Ombros posteriores","Puxe a corda em direção à face|Abra as mãos ao finalizar|Retorne lentamente","Evite elevar os ombros.","pull"],
-["cable-curl","Rosca na polia",2,"10–15",60,"RIR 1","Bíceps","Fixe os cotovelos|Flexione completamente|Retorne mantendo tensão","Não incline o tronco.","curl"],
-["pushdown","Tríceps na polia",2,"10–15",60,"RIR 1","Tríceps","Fixe os cotovelos|Estenda completamente|Retorne de forma controlada","O ombro não deve acompanhar o movimento.","press"],
-["pallof","Pallof press",2,"10–15/lado",60,"RIR 2","Core","Fique de lado para a polia|Empurre a alça à frente|Resista à rotação e retorne","Quadris e tronco permanecem parados.","core"]]},
-{id:"sex",day:"SEX",name:"Sexta",title:"Glúteos e posteriores",focus:"Estímulo complementar com menor carga axial.",ex:[
-["bulgarian-smith","Agachamento búlgaro no Smith",2,"10–15/lado",90,"RIR 2","Glúteos e pernas","Apoie o pé de trás|Use passo mais longo e leve inclinação do tronco|Suba pela perna da frente","Mantenha a pelve estável e não use a perna de trás para impulsionar.","lunge"],
-["back45","Extensão de quadril a 45°",2,"10–15",90,"RIR 1–2","Glúteos e posteriores","Apoie o quadril corretamente|Desça dobrando o quadril|Suba contraindo glúteos","Não hiperestenda a lombar.","hinge"],
-["leg-curl2","Flexora sentada ou deitada",3,"10–15",90,"RIR 1–2","Posteriores","Ajuste o equipamento|Flexione os joelhos|Controle a volta por 2 segundos","Mantenha o quadril estável.","curl"],
-["kickback","Coice no cabo",2,"12–20/lado",60,"RIR 1","Glúteos","Prenda a tornozeleira|Estenda o quadril para trás|Retorne sem perder tensão","Não arqueie a lombar.","kick"],
-["abduction2","Abdução na máquina",2,"15–25",60,"RIR 1","Glúteo médio","Ajuste a máquina|Abra com controle|Retorne mantendo tensão","Evite bater os pesos.","abduct"],
-["calf-leg","Panturrilha no leg press",3,"10–15",75,"RIR 1–2","Panturrilhas","Apoie a ponta dos pés|Desça os calcanhares|Empurre até a contração máxima","Não flexione os joelhos.","calf"],
-["deadbug","Dead bug",2,"8–12/lado",45,"Técnica","Core","Deite com quadris e joelhos a 90°|Estenda braço e perna opostos|Retorne e alterne","A lombar deve permanecer estável.","core"]]}
+["lateral","Elevação lateral com halteres",2,"12–20",60,"RIR 1–2","Ombros","Mantenha os cotovelos levemente flexionados|Eleve até a linha confortável dos ombros|Desça devagar","Use carga moderada e sem impulso.","raise"],
+["incline-curl","Rosca inclinada com halteres",2,"10–12",60,"RIR 1–2","Bíceps","Apoie as costas no banco inclinado|Flexione os cotovelos sem levá-los à frente|Desça completamente","Não projete os ombros para frente.","curl"],
+["rope-triceps","Tríceps com corda",2,"10–15",60,"RIR 1–2","Tríceps","Fixe os cotovelos ao lado do corpo|Estenda os braços|Separe a corda no final","Não movimente os ombros.","press"]]},
+{id:"qua",day:"QUA",name:"Quarta",title:"Inferiores B · amplitude e quadríceps",focus:"Todos os grupos inferiores com movimentos diferentes da segunda-feira.",ex:[
+["hack-squat","Agachamento no hack",3,"8–12",120,"RIR 2","Quadríceps e glúteos","Apoie toda a coluna|Desça mantendo joelhos alinhados aos pés|Suba empurrando a plataforma","Use amplitude em que a pelve permaneça estável.","squat"],
+["back45","Extensão de quadril no banco 45°",2,"10–15",90,"RIR 2","Glúteos e posteriores","Apoie o quadril corretamente|Desça dobrando o quadril|Suba contraindo os glúteos","Não hiperestenda a lombar.","hinge"],
+["leg-press","Leg press 45°",2,"10–15",120,"RIR 2","Quadríceps e glúteos","Apoie toda a coluna|Desça até manter a pelve estável|Empurre sem travar os joelhos","Não retire a lombar do encosto.","squat"],
+["lying-curl","Mesa flexora",2,"10–15",90,"RIR 1–2","Posteriores","Alinhe o joelho ao eixo da máquina|Flexione sem levantar o quadril|Retorne lentamente","Não deixe a carga despencar.","curl"],
+["cable-abduction","Abdução no cabo em pé",2,"12–20/lado",60,"RIR 1–2","Glúteos médio e mínimo","Prenda a tornozeleira|Afaste a perna lateralmente|Retorne sem perder a postura","Não incline o tronco para compensar.","abduct"],
+["adductor","Adutora na máquina",2,"12–20",60,"RIR 1–2","Adutores","Ajuste a abertura confortável|Aproxime as pernas com controle|Retorne lentamente","Evite bater os pesos.","adduct"],
+["calf-seat","Panturrilha sentada",3,"12–20",75,"RIR 1–2","Panturrilhas","Desça até sentir alongamento|Suba o máximo possível|Pause nas extremidades","Use amplitude completa.","calf"]]},
+{id:"qui",day:"QUI",name:"Quinta",title:"Superiores B · costas, peito e braços",focus:"Segundo estímulo completo de superiores com exercícios diferentes.",ex:[
+["assisted-pull","Barra assistida com pegada neutra",3,"6–10",90,"RIR 2","Costas","Ajuste a assistência|Leve os cotovelos em direção ao tronco|Desça controlando até alongar","Evite balançar as pernas.","pull"],
+["one-arm-row","Remada unilateral com halter",3,"8–12/lado",90,"RIR 2","Costas","Apoie uma mão e mantenha o tronco estável|Puxe o halter em direção ao quadril|Desça até alongar","Não gire o tronco para ajudar.","pull"],
+["bench-bar","Supino reto com barra",3,"6–10",120,"RIR 2","Peitoral e tríceps","Apoie pés e escápulas|Desça a barra com controle|Empurre mantendo os punhos alinhados","Use presilhas e, com cargas altas, peça auxílio.","press"],
+["landmine","Desenvolvimento landmine unilateral",2,"10–12/lado",75,"RIR 2","Ombros e peitoral superior","Segure a ponta da barra junto ao ombro|Empurre para cima e à frente|Retorne com controle","Mantenha o tronco firme e não arqueie a lombar.","press"],
+["reverse-pec","Crucifixo inverso no peck deck",2,"12–20",60,"RIR 1–2","Deltoide posterior","Ajuste o banco e apoie o peito|Abra os braços|Retorne lentamente","Evite elevar os ombros.","pull"],
+["scott-curl","Rosca Scott na máquina",2,"10–12",60,"RIR 1–2","Bíceps","Apoie totalmente os braços|Flexione os cotovelos|Desça sem perder o controle","Não retire os braços do apoio.","curl"],
+["french-press","Tríceps francês com barra W",2,"10–15",60,"RIR 1–2","Tríceps","Mantenha os cotovelos apontados para cima|Desça a barra atrás da cabeça|Estenda os braços","Evite abrir excessivamente os cotovelos.","press"]]},
+{id:"sex",day:"SEX",name:"Sexta",title:"Inferiores C · unilateral e resistência",focus:"Estímulo leve a moderado para todos os grupos inferiores.",ex:[
+["reverse-lunge","Afundo reverso no Smith",2,"10–12/lado",90,"RIR 2","Glúteos e quadríceps","Posicione-se sob a barra|Dê um passo para trás e desça|Suba pela perna da frente","Mantenha o pé da frente totalmente apoiado.","lunge"],
+["sumo","Agachamento sumô com halter",2,"10–15",90,"RIR 2","Adutores, glúteos e quadríceps","Use base ampla e pontas dos pés levemente abertas|Desça entre as pernas|Suba empurrando o chão","Joelhos acompanham a direção dos pés.","squat"],
+["pull-through","Pull-through no cabo",2,"12–15",75,"RIR 2","Glúteos e posteriores","Fique de costas para a polia baixa|Leve o quadril para trás|Estenda o quadril e fique ereta","Não transforme o movimento em agachamento.","hinge"],
+["standing-curl","Flexora unilateral em pé",2,"12–15/lado",75,"RIR 1–2","Posteriores","Alinhe o joelho ao eixo|Flexione uma perna|Retorne lentamente","Mantenha quadril e tronco apoiados.","curl"],
+["lateral-lunge","Afundo lateral com halter",2,"8–12/lado",90,"RIR 2","Adutores, glúteos e quadríceps","Dê um passo amplo para o lado|Flexione a perna do passo e leve o quadril para trás|Empurre o chão para voltar","Mantenha o outro pé apoiado e a coluna neutra.","lunge"],
+["kickback","Coice no cabo",2,"12–20/lado",60,"RIR 1–2","Glúteo máximo","Prenda a tornozeleira|Estenda o quadril para trás|Retorne sem perder tensão","Não arqueie a lombar.","kick"],
+["single-calf","Panturrilha unilateral com halter",2,"12–20/lado",60,"RIR 1–2","Panturrilhas","Apoie-se para equilibrar|Desça o calcanhar completamente|Suba até a ponta do pé","Não use impulso.","calf"]]}
 ];
 
 const WARMUPS={
-seg:{title:"Aquecimento de segunda",steps:[["Geral","Caminhada ou bicicleta leve · 2–3 min"],["Ativação","Ponte de glúteos sem carga · 1 × 12, segurando 2 s no topo"],["Glúteo médio","Abdução bem leve ou passos laterais com faixa · 1 × 12–15"],["Preparação específica","Elevação pélvica · 2 séries progressivas: 10 reps leves e 5–6 reps moderadas"]]},
-qua:{title:"Aquecimento de quarta",steps:[["Geral","Caminhada ou bicicleta leve · 2–3 min"],["Ativação","Ponte de glúteos sem carga · 1 × 12, segurando 2 s no topo"],["Técnica e equilíbrio","Búlgaro com apoio e peso corporal · 1 × 8 por lado"],["Preparação específica","Búlgaro com carga leve · 1 × 5–6 por lado; ajuste a distância dos pés antes de começar"]]},
-sex:{title:"Aquecimento de sexta",steps:[["Geral","Caminhada ou bicicleta leve · 2–3 min"],["Ativação","Ponte de glúteos sem carga · 1 × 12, segurando 2 s no topo"],["Técnica","Afundo parado ou búlgaro com apoio e peso corporal · 1 × 8 por lado"],["Preparação específica","Búlgaro no Smith · 1–2 séries progressivas de 6–8 reps leves por lado"]]}
+seg:{title:"Aquecimento de segunda",steps:[["Abdômen · 100 reps","25 abdominal curto + 25 reverso + 25 dead bug alternado + 25 toques nos calcanhares"],["Ativação","Abdução com miniband · 1 × 15"],["Ativação","Elevação pélvica sem carga · 1 × 12, segurando 2 s no alto"],["Técnica","Búlgaro com apoio e sem carga · 1 × 8 por lado"],["Preparação específica","Elevação pélvica · 2 séries progressivas antes das séries válidas"]]},
+ter:{title:"Aquecimento de terça",steps:[["Abdômen · 100 reps","25 bicicleta lenta + 25 cruzados + 25 elevações laterais + 25 marchas deitada"],["Ativação","Retração escapular com elástico · 1 × 15"],["Ativação","Pull-apart com elástico · 1 × 15"],["Ativação","Rotação externa dos ombros · 1 × 12 por lado"],["Preparação específica","Puxada alta · 1 série leve de 10–12 reps"]]},
+qua:{title:"Aquecimento de quarta",steps:[["Abdômen · 100 reps","25 elevações de joelhos + 25 deslizamentos de calcanhar + 25 marchas a 90° + 25 extensões alternadas"],["Ativação","Agachamento sem carga com calcanhares elevados · 1 × 12"],["Ativação","Extensão de joelho sem carga · 1 × 15"],["Ativação","Caminhada lateral com miniband · 1 × 12 por lado"],["Preparação específica","Hack · 2 séries progressivas antes das séries válidas"]]},
+qui:{title:"Aquecimento de quinta",steps:[["Abdômen · 100 reps","25 alcances laterais + 25 laterais à direita + 25 laterais à esquerda + 25 rotações curtas"],["Ativação","Remada leve com elástico · 1 × 15"],["Ativação","Deslizamento dos braços na parede · 1 × 10"],["Ativação","Flexão escapular na parede · 1 × 12"],["Preparação específica","Barra assistida · 1 série leve de 8–10 reps"]]},
+sex:{title:"Aquecimento de sexta",steps:[["Abdômen · 100 reps","25 bird dogs + 25 toques nos ombros + 25 mountain climbers lentos + 25 crunches com braços estendidos"],["Ativação","Frog pump · 1 × 15"],["Ativação","Flexão de joelhos com pés deslizando · 1 × 8"],["Ativação","Agachamento lateral sem carga · 1 × 8 por lado"],["Preparação específica","Afundo reverso no Smith · 1 série leve por lado"]]}
 };
 
 const MEDIA_BASE="./media/";
 const MEDIA={
-"hip-thrust":["Barbell_Hip_Thrust",1],"rdl":["Romanian_Deadlift",1],"leg-curl":["Lying_Leg_Curls",1],
-"abduction":["Thigh_Abductor",1],"calf-stand":["Standing_Calf_Raises",1],"lat-pull":["Wide-Grip_Lat_Pulldown",1],
-"chest-row":["Dumbbell_Incline_Row",1],"chest-press":["Machine_Bench_Press",1],"single-pull":["One_Arm_Lat_Pulldown",1],
-"lateral":["Side_Lateral_Raise",1],"curl":["Dumbbell_Alternate_Bicep_Curl",1],"triceps":["Triceps_Pushdown_-_Rope_Attachment",1],
-"crunch":["Cable_Crunch",1],"smith":["Smith_Machine_Squat",1],"leg-press":["Leg_Press",1],
-"bulgarian":["Split_Squat_with_Dumbbells",0],"extension":["Leg_Extensions",1],"calf-seat":["Seated_Calf_Raise",1],
-"cable-row":["Seated_Cable_Rows",1],"neutral-pull":["Close-Grip_Front_Lat_Pulldown",0],"incline":["Incline_Dumbbell_Press",1],
-"shoulder":["Machine_Shoulder_Military_Press",1],"face-pull":["Face_Pull",1],"cable-curl":["Standing_Biceps_Cable_Curl",1],
-"pushdown":["Triceps_Pushdown",1],"pallof":["Pallof_Press",1],"bulgarian-smith":["Smith_Single-Leg_Split_Squat",0],
-"back45":["Hyperextensions_Back_Extensions",0],"leg-curl2":["Seated_Leg_Curl",0],"kickback":["One-Legged_Cable_Kickback",1],
-"abduction2":["Thigh_Abductor",1],"calf-leg":["Calf_Press_On_The_Leg_Press_Machine",1],"deadbug":["Dead_Bug",1]
+"hip-thrust":["Barbell_Hip_Thrust",1],"rdl":["Romanian_Deadlift",1],"bulgarian":["Split_Squat_with_Dumbbells",0],
+"extension":["Leg_Extensions",1],"seated-curl":["Seated_Leg_Curl",0],"abduction":["Thigh_Abductor",1],"calf-stand":["Standing_Calf_Raises",1],
+"lat-pull":["Wide-Grip_Lat_Pulldown",1],"chest-row":["Dumbbell_Incline_Row",0],"incline":["Incline_Dumbbell_Press",1],
+"shoulder":["Machine_Shoulder_Military_Press",1],"lateral":["Side_Lateral_Raise",1],"incline-curl":["Dumbbell_Alternate_Bicep_Curl",0],
+"rope-triceps":["Triceps_Pushdown_-_Rope_Attachment",1],"hack-squat":["Smith_Machine_Squat",0],"back45":["Hyperextensions_Back_Extensions",0],
+"leg-press":["Leg_Press",1],"lying-curl":["Lying_Leg_Curls",1],"cable-abduction":["Thigh_Abductor",0],"adductor":["Thigh_Abductor",0],
+"calf-seat":["Seated_Calf_Raise",1],"assisted-pull":["Close-Grip_Front_Lat_Pulldown",0],"one-arm-row":["Dumbbell_Incline_Row",0],
+"bench-bar":["Machine_Bench_Press",0],"landmine":["Machine_Shoulder_Military_Press",0],"reverse-pec":["Face_Pull",0],
+"scott-curl":["Standing_Biceps_Cable_Curl",0],"french-press":["Triceps_Pushdown",0],"reverse-lunge":["Split_Squat_with_Dumbbells",0],
+"sumo":["Smith_Machine_Squat",0],"pull-through":["Romanian_Deadlift",0],"standing-curl":["Lying_Leg_Curls",0],
+"lateral-lunge":["Split_Squat_with_Dumbbells",0],"kickback":["One-Legged_Cable_Kickback",1],"single-calf":["Standing_Calf_Raises",0]
 };
 
 const KEY="treino-matred-v1";
