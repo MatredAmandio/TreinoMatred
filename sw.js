@@ -1,4 +1,4 @@
-const CACHE = "treino-matred-v11";
+const CACHE = "treino-matred-v12";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", event => {
